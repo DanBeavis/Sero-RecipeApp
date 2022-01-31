@@ -1,0 +1,23 @@
+version: '3'
+services:
+  recipe-book-api:
+    build:
+      context: ./api
+    ports:
+      - "3080:3080"
+    container_name: recipe-book-api
+    volumes:
+       - ./api:/usr/src/app/api
+       - /usr/src/app/api/node_modules
+  recipe-book-ui:
+    build:
+      context: ./ui
+    ports:
+      - "3000:3000"
+    container_name: recipe-book-ui
+    stdin_open: true
+    volumes:
+       - ./ui:/usr/src/app/ui
+       - /usr/src/app/ui/node_modules
+
+######## Other containers #########
