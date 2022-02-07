@@ -47,8 +47,9 @@ export class Application {
           res.status(500).send(`Failed to insert recipe "${recipe.id}"`);
         }
 
-        res.send(insertResult);
-      });
+        res.status(201).send();
+      },
+    );
 
     app.delete(
       '/recipes/:id',
