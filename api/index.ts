@@ -2,7 +2,11 @@ import { json, urlencoded } from 'body-parser';
 import cors from 'cors';
 import express, { Request, Response } from 'express';
 import { deleteRecipe, getAllRecipes, insertRecipe } from './db';
-import { checkRecipeExists, validateRecipeDoesNotExist } from './middleware';
+import {
+  checkRecipeExists,
+  sanitiseRecipeId,
+  validateRecipeDoesNotExist,
+} from './middleware';
 
 const app = express();
 
@@ -37,7 +41,9 @@ export class Application {
       },
     );
 
-    app.post('/recipes',
+    app.post(
+      '/recipes',
+      sanitiseRecipeId,
       validateRecipeDoesNotExist,
       async (req: Request, res: Response) => {
         const recipe = req.body;

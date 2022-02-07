@@ -17,6 +17,15 @@ export const checkRecipeExists = async (
   next();
 };
 
+export const sanitiseRecipeId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  req.body.id = String(req.body.id);
+  next();
+};
+
 export const validateRecipeDoesNotExist = async (
   req: Request,
   res: Response,
