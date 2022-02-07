@@ -10,7 +10,7 @@ export const checkRecipeExists = async (
   const recipe = await getRecipe(id);
 
   if (!recipe) {
-    res.status(404).send(`Recipe "${id}" does not exist`);
+    return res.status(404).send(`Recipe "${id}" does not exist`);
   }
 
   res.locals.recipe = recipe;
@@ -26,7 +26,7 @@ export const validateRecipeDoesNotExist = async (
   const recipe = await getRecipe(id);
 
   if (recipe) {
-    res.status(409).send(`Recipe with id "${id}" already exists`);
+    return res.status(409).send(`Recipe with id "${id}" already exists`);
   }
 
   next();
