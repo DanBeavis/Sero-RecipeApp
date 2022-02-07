@@ -1,6 +1,8 @@
-import { json, urlencoded } from "body-parser";
-import cors from "cors";
-import express, { Request, Response } from "express";
+import { json, urlencoded } from 'body-parser';
+import cors from 'cors';
+import express, { Request, Response } from 'express';
+import { deleteRecipe, getAllRecipes, insertRecipe } from './db';
+import { checkRecipeExists, validateRecipeDoesNotExist } from './middleware';
 
 const app = express();
 
@@ -17,22 +19,52 @@ export class Application {
   }
 
   listen() {
-    app.listen(3080, () => console.log("Listening on port 3080"));
+    app.listen(3080, () => console.log('Listening on port 3080'));
   }
 
   setupControllers() {
-    app.get("/recipes", (req: Request, res: Response) => {
-      res.status(200).send("");
+    app.get('/recipes', async (req: Request, res: Response) => {
+      const recipes = await getAllRecipes();
+
+      res.send(recipes);
     });
-    app.get("/recipes/:id", (req: Request, res: Response) => {
-      res.status(200).send("");
-    });
-    app.post("/recipes", (req: Request, res: Response) => {
-      res.status(200).send("");
-    });
-    app.delete("/recipes/:id", (req: Request, res: Response) => {
-      res.status(200).send("");
-    });
+
+    app.get(
+      '/recipes/:id',
+      checkRecipeExists,
+      (req: Request, res: Response) => {
+        res.send(res.locals.recipe);
+      },
+    );
+
+    app.post('/recipes',
+      validateRecipeDoesNotExist,
+      async (req: Request, res: Response) => {
+        const recipe = req.body;
+        const insertResult = await insertRecipe(recipe);
+
+        if (!insertResult.acknowledged) {
+          res.status(500).send(`Failed to insert recipe "${recipe.id}"`);
+        }
+
+        res.send(insertResult);
+      });
+
+    app.delete(
+      '/recipes/:id',
+      checkRecipeExists,
+      async (req: Request, res: Response) => {
+        const id = req.params.id;
+        const deleteResult = await deleteRecipe(id);
+
+        if (!deleteResult.acknowledged || deleteResult.deletedCount === 0) {
+          res.status(500).send(`Failed to delete recipe "${id}"`);
+        }
+
+        res.send();
+      },
+    );
+
     app;
   }
 }
