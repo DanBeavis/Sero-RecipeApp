@@ -1,6 +1,8 @@
 version: '3'
 services:
   recipe-book-api:
+    depends_on:
+      - recipe-book-db
     build:
       context: ./api
     ports:
@@ -9,6 +11,11 @@ services:
     volumes:
        - ./api:/usr/src/app/api
        - /usr/src/app/api/node_modules
+    environment:
+      NODE_ENV: development
+      MONGODB_HOST: ${MONGODB_HOST}
+      MONGODB_PORT: ${MONGODB_PORT}
+      MONGODB_DB_NAME: ${MONGODB_DB_NAME}
   recipe-book-ui:
     build:
       context: ./ui
@@ -21,3 +28,12 @@ services:
        - /usr/src/app/ui/node_modules
 
 ######## Other containers #########
+  recipe-book-db:
+    image: mongo
+    container_name: $MONGODB_HOST
+    ports:
+      - "${MONGODB_PORT}:${MONGODB_PORT}"
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGODB_DB_NAME}
+    volumes:
+      - ~/recipe-app/database:/data/db
