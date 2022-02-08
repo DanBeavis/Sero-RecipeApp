@@ -1,0 +1,54 @@
+import * as middleware from '../middleware';
+import { Request, Response } from 'express';
+import httpMocks from 'node-mocks-http';
+import clearAllMocks = jest.clearAllMocks;
+
+jest.mock('../db');
+
+const db = require('../db');
+
+const next = jest.fn(() => {
+});
+
+let req: Request, res: Response;
+
+beforeEach(() => {
+  clearAllMocks();
+
+  req = httpMocks.createRequest();
+  res = httpMocks.createResponse();
+  res.send = jest.fn();
+  res.status = jest.fn().mockImplementation(code => {
+    res.statusCode = code;
+    return res;
+  });
+});
+
+describe('checkRecipeExists', () => {
+  it('Recipe does not exists', async () => {
+    expect(next).not.toBeCalled();
+
+    db.getRecipe.mockReturnValue({});
+    req.params.id = '123';
+
+    await middleware.checkRecipeExists(req, res, next);
+
+    expect(next).toBeCalledTimes(1);
+    expect(res.send).not.toBeCalled();
+    expect(res.locals.recipe).toEqual({});
+  });
+  it('Recipe exists', async () => {
+    expect(next).not.toBeCalled();
+
+    db.getRecipe.mockReturnValue(null);
+    req.params.id = '123';
+
+    await middleware.checkRecipeExists(req, res, next);
+
+    expect(res.status).toBeCalledWith(404);
+    expect(res.statusCode).toBe(404);
+    expect(res.send).toBeCalledWith(`Recipe "${req.params.id}" does not exist`);
+    expect(next).not.toBeCalled();
+    expect(res.locals.recipe).toBeUndefined();
+  });
+});
