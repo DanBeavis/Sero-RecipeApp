@@ -14,6 +14,7 @@ let req: Request, res: Response;
 
 beforeEach(() => {
   clearAllMocks();
+  expect(next).not.toBeCalled();
 
   req = httpMocks.createRequest();
   res = httpMocks.createResponse();
@@ -26,8 +27,6 @@ beforeEach(() => {
 
 describe('checkRecipeExists', () => {
   it('Recipe does not exists', async () => {
-    expect(next).not.toBeCalled();
-
     db.getRecipe.mockReturnValue({});
     req.params.id = '123';
 
@@ -38,8 +37,6 @@ describe('checkRecipeExists', () => {
     expect(res.locals.recipe).toEqual({});
   });
   it('Recipe exists', async () => {
-    expect(next).not.toBeCalled();
-
     db.getRecipe.mockReturnValue(null);
     req.params.id = '123';
 
@@ -51,4 +48,28 @@ describe('checkRecipeExists', () => {
     expect(next).not.toBeCalled();
     expect(res.locals.recipe).toBeUndefined();
   });
+});
+
+describe('sanitiseRecipeId', () => {
+  it('Sanitise number', async () => {
+    const id = 123;
+    req.body.id = id;
+
+    await middleware.sanitiseRecipeId(req, res, next);
+    expect(next).toBeCalledTimes(1);
+
+    expect(req.body.id).toEqual(String(id));
+  });
+  it('Sanitise string', async () => {
+    const id = '123'
+    req.body.id = id;
+
+    await middleware.sanitiseRecipeId(req, res, next);
+    expect(next).toBeCalledTimes(1);
+    expect(req.body.id).toEqual(id);
+  });
+});
+
+describe('validateRecipeDoesNotExist', () => {
+
 });
