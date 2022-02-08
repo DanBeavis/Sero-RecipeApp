@@ -8,7 +8,7 @@ import {
   validateRecipeDoesNotExist,
 } from './middleware';
 
-const app = express();
+export const app = express();
 
 export class Application {
   constructor() {
