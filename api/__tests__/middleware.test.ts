@@ -61,7 +61,7 @@ describe('sanitiseRecipeId', () => {
     expect(req.body.id).toEqual(String(id));
   });
   it('Sanitise string', async () => {
-    const id = '123'
+    const id = '123';
     req.body.id = id;
 
     await middleware.sanitiseRecipeId(req, res, next);
@@ -71,5 +71,24 @@ describe('sanitiseRecipeId', () => {
 });
 
 describe('validateRecipeDoesNotExist', () => {
+  it('Recipe exists', async () => {
+    db.getRecipe.mockReturnValue({});
+    req.body.id = '123';
 
+    await middleware.validateRecipeDoesNotExist(req, res, next);
+
+    expect(res.status).toBeCalledWith(409);
+    expect(res.statusCode).toBe(409);
+    expect(res.send).toBeCalledWith(`Recipe with id "${req.body.id}" already exists`);
+    expect(next).not.toBeCalled();
+  });
+  it('Recipe does not exist', async () => {
+    db.getRecipe.mockReturnValue(null);
+    req.body.id = '123';
+
+    await middleware.validateRecipeDoesNotExist(req, res, next);
+
+    expect(next).toBeCalledTimes(1);
+    expect(res.send).not.toBeCalled();
+  });
 });
