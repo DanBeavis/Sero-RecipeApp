@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import httpMocks from 'node-mocks-http';
-import { app } from '../index';
+import app from '../app';
 import supertest from 'supertest';
 
 jest.mock('../middleware', () => ({
