@@ -50,7 +50,7 @@ export class Application {
         const insertResult = await insertRecipe(recipe);
 
         if (!insertResult.acknowledged) {
-          res.status(500).send(`Failed to insert recipe "${recipe.id}"`);
+          return res.status(500).send(`Failed to insert recipe "${recipe.id}"`);
         }
 
         res.status(201).send();
@@ -65,7 +65,7 @@ export class Application {
         const deleteResult = await deleteRecipe(id);
 
         if (!deleteResult.acknowledged || deleteResult.deletedCount === 0) {
-          res.status(500).send(`Failed to delete recipe "${id}"`);
+          return res.status(500).send(`Failed to delete recipe "${id}"`);
         }
 
         res.send();

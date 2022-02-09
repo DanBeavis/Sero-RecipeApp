@@ -7,8 +7,7 @@ jest.mock('../db');
 
 const db = require('../db');
 
-const next = jest.fn(() => {
-});
+const next = jest.fn(() => {});
 
 let req: Request, res: Response;
 
@@ -19,7 +18,7 @@ beforeEach(() => {
   req = httpMocks.createRequest();
   res = httpMocks.createResponse();
   res.send = jest.fn();
-  res.status = jest.fn().mockImplementation(code => {
+  res.status = jest.fn().mockImplementation((code) => {
     res.statusCode = code;
     return res;
   });
@@ -79,7 +78,9 @@ describe('validateRecipeDoesNotExist', () => {
 
     expect(res.status).toBeCalledWith(409);
     expect(res.statusCode).toBe(409);
-    expect(res.send).toBeCalledWith(`Recipe with id "${req.body.id}" already exists`);
+    expect(res.send).toBeCalledWith(
+      `Recipe with id "${req.body.id}" already exists`,
+    );
     expect(next).not.toBeCalled();
   });
   it('Recipe does not exist', async () => {

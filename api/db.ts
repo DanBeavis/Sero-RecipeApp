@@ -19,7 +19,10 @@ export const getAllRecipes = async () => {
 };
 
 export const getRecipe = async (id: String) => {
-  return (await recipesConnect()).findOne({ id: id }, { projection: { _id: 0 } });
+  return (await recipesConnect()).findOne(
+    { id: id },
+    { projection: { _id: 0 } },
+  );
 };
 
 export const insertRecipe = async (recipe: object) => {
